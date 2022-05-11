@@ -1,8 +1,10 @@
-from django.http import FileResponse, JsonResponse,HttpResponse
+from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
+
+from app.models import Landlord, Tenant
 
 
 # Create your views here.
@@ -45,6 +47,19 @@ def Verify(token):
         return True
     else:
         return False
+
+
+def userCheck(token):
+    user = (None,None)
+    tenatUser= Tenant.objects.filter(user__auth_token= token)
+    if len(tenatUser)> 0:
+        user = ("Tenant",tenatUser[0].id)
+    else:
+        query = Landlord.objects.filter(user__auth_token= token)
+        if len(query) >0:
+            user = ("Landlord",query[0].id)
+    return user
+
 
 
 
