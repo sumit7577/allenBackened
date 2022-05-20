@@ -30,7 +30,7 @@ def home(request):
 @csrf_exempt
 def Login(request):
     if request.method == "POST":
-        token = request.headers.get("token")
+        token = request.headers.get("authorization")
         query  = User.objects.all().filter(auth_token=token)
         if query is not None:
             user = {"name":query[0].username,"email":query[0].email,"type":"something"}
@@ -53,7 +53,7 @@ def userCheck(token):
     user = (None,None)
     tenatUser= Tenant.objects.filter(user__auth_token= token)
     if len(tenatUser)> 0:
-        user = ("Tenant",tenatUser[0].id)
+        user = ("Tenant",tenatUser[0])
     else:
         query = Landlord.objects.filter(user__auth_token= token)
         if len(query) >0:

@@ -29,9 +29,14 @@ class Property(models.Model):
         return self.name
 
 class Rent(models.Model):
+    rentChoice = [
+        ("Paid","Paid"),
+        ("Not Paid","Not Paid")
+    ]
     Room_Renter_Name = models.ForeignKey(Tenant,on_delete=models.CASCADE,related_name='renter_name')
     Apartment_Name = models.ForeignKey(Property,on_delete=models.CASCADE,related_name='apartment_name')
-    Payment_Date = models.DateTimeField(default=timezone.now)
+    Payment_Date = models.DateField(default=timezone.now)
+    Status = models.CharField(choices=rentChoice,default="Paid",max_length=20)
     Payment_Amount = models.IntegerField(null=False,blank=False,unique=False)
     Currency_Code = models.CharField(blank=False,max_length=6,null=False,unique=False)
     
