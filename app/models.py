@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.forms import modelform_factory
 from django.utils import timezone
 
 # Create your models here.
@@ -50,7 +51,8 @@ class Expense(models.Model):
         ("Requested","Requested"),
         ("Declined","Declined")
     ]
-    user = models.OneToOneField(Tenant,on_delete=models.CASCADE)
+    Title = models.CharField(max_length=40,default="Maintainance invoice",blank=False,unique=False)
+    Expense_User = models.ForeignKey(Tenant,on_delete=models.CASCADE,related_name="expense_user")
     Payment_Date = models.DateField(default=timezone.now)
     Invoice = models.FileField(upload_to='invoice')
     Category = models.CharField(max_length=30,default="",blank=False,unique=False)
@@ -59,4 +61,4 @@ class Expense(models.Model):
     Status = models.CharField(choices=statusChoice,default="Requested",max_length=20)
 
     def __str__(self):
-        return self.Apartment_Name.name
+        return self.Title
