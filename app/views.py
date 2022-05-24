@@ -33,7 +33,8 @@ def Login(request):
         token = request.headers.get("authorization")
         query  = User.objects.all().filter(auth_token=token)
         if query is not None:
-            user = {"name":query[0].username,"email":query[0].email,"type":"something"}
+            getUser = userCheck(token)
+            user = {"name":query[0].username,"email":query[0].email,"type":getUser[0]}
             return JsonResponse({"error":False,"message":user},status=200)
         else:
             return JsonResponse({"error":True,"message":"Please enter Valid Token Key"},status=404)
