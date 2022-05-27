@@ -18,6 +18,7 @@ class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense
         fields= "__all__"
+        depth=1
 
 
 class LandlordSerializer(serializers.ModelSerializer):
@@ -29,3 +30,4 @@ class PropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = "__all__"
+        depth=1

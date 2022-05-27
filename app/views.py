@@ -1,3 +1,4 @@
+from urllib.robotparser import RequestRate
 from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
@@ -14,11 +15,16 @@ def home(request):
         try:
             username= request.POST.get("username")
             password = request.POST.get("password")
+            type = request.POST.get("type")
             user = authenticate(username =username,password = password)
             if user is not None:
                 Token.objects.get_or_create(user=user)
                 token = Token.objects.get(user_id=user.id)
-                return JsonResponse({"error":False,"message":token.key})
+                userType= userCheck(token)
+                if userType[0] == type:
+                    return JsonResponse({"error":False,"message":token.key})
+                else:
+                    return JsonResponse({"error":True,"message":f"This User is Not Assigned as {type}"})
             else:
                 return JsonResponse({"error":True,"message":"Please enter Valid username and passsword"},status=404)
         except Exception as e:
