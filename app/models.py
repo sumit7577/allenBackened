@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.forms import modelform_factory
 from django.utils import timezone
 
 # Create your models here.
@@ -59,6 +58,7 @@ class Expense(models.Model):
     Payment_Amount = models.IntegerField(blank=False,default=False)
     Apartment_Name = models.ForeignKey(Property,on_delete=models.CASCADE,related_name="expense_apartment")
     Status = models.CharField(choices=statusChoice,default="Requested",max_length=20)
+    Declined_Message = models.CharField(default="",blank=True,null=True,max_length=200)
 
     def __str__(self):
         return self.Title

@@ -1,4 +1,3 @@
-from multiprocessing import managers
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .views import Verify,userCheck
@@ -59,6 +58,7 @@ def TenantFunc(token,id):
     response['expense'] = expenseData
     return response
 
+
 @csrf_exempt
 def addExpense(request):
     if request.method == "POST":
@@ -81,4 +81,26 @@ def addExpense(request):
             print(e)
             return JsonResponse({"error":True,"message":"Please! Fill All Details Correctly"},status=200)
 
+    return JsonResponse({"error":True,"message":"Get Method Not Allowed!"},status=409)
+
+
+@csrf_exempt
+def editExpense(request):
+    if request.method == "POST":
+        try:
+            token = request.headers['authorization']
+            userCategory = userCheck(token)
+            if userCategory[0] == "Landlord":
+                id = request.POST.get("id")
+                choices = request.POST.get("choice")
+                message = request.POST.get("message")
+                expenseData = Expense.objects.get(id=id)
+                expenseData.Status = choices
+                expenseData.Declined_Message = message
+                expenseData.save()
+                return JsonResponse({"error":False,"message":f"You {choices}ed This Expense"},status=200)
+            else:
+                return JsonResponse({"error":True,"message":"You are Not a Landlord To Edit This!"},status=200)
+        except Exception as e:
+            print(e)
     return JsonResponse({"error":True,"message":"Get Method Not Allowed!"},status=409)
