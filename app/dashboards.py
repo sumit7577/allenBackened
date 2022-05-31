@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .views import Verify,userCheck
 from .models import Expense, Rent,Property,Tenant,Landlord
 from .serializers import userSerializers
+from django.db.models import Sum
 
 @csrf_exempt
 def dashboard(request):
@@ -16,7 +17,7 @@ def dashboard(request):
                         queryData = TenantFunc(token,userType[1])
                         rentData = userSerializers.RentSerializer(queryData['rent'],many=True)
                         expenseData = userSerializers.ExpenseSerializer(queryData['expense'],many=True)
-                        return JsonResponse({"error":False,"message":{"rent":rentData.data,"expense":expenseData.data}})
+                        return JsonResponse({"error":False,"message":{"rent":rentData.data,"expense":expenseData.data,"dashboard":queryData['dashboard']}})
                     elif userType[0] == "Landlord":
                         queryData = LandlordFunc(token,userType[1])
                         expenseData = userSerializers.ExpenseSerializer(queryData['expense'],many=True)
@@ -54,8 +55,14 @@ def TenantFunc(token,id):
     propertyName = Property.objects.filter(Room_Renter=id)
     rentData = Rent.objects.filter(Apartment_Name_id=propertyName[0].id)
     expenseData = Expense.objects.filter(Apartment_Name_id=rentData[0].id)
+    totalPaid = rentData.aggregate(Sum("Payment_Amount"))
+    totalExpensePaid  = expenseData.aggregate(Sum("Payment_Amount"))
+    monthlyRent = 100
+    AmountDeposited = 100
+    dashboardData = {"Amount_Deposited":AmountDeposited,"Monthly_Rent":monthlyRent,"My_Expense":totalExpensePaid,"Total_Rent_Paid":totalPaid}
     response['rent'] = rentData
     response['expense'] = expenseData
+    response['dashboard'] = dashboardData
     return response
 
 
