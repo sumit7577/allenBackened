@@ -25,9 +25,9 @@ def home(request):
                 else:
                     return JsonResponse({"error":True,"message":f"This User is Not Assigned as {type}"})
             else:
-                return JsonResponse({"error":True,"message":"Please enter Valid username and passsword"},status=404)
+                return JsonResponse({"error":True,"message":"Please enter Valid username and passsword"},status=200)
         except Exception as e:
-            return JsonResponse({"error":True,"message":"Please enter username and passsword"},status=500)
+            return JsonResponse({"error":True,"message":"Please enter username and passsword"},status=200)
     else:
         return JsonResponse({"error":True,"message":"Get Method Not Allowed!"},status=500)
 
@@ -42,7 +42,7 @@ def Login(request):
             user = {"name":query[0].username,"email":query[0].email,"type":getUser[0]}
             return JsonResponse({"error":False,"message":user},status=200)
         else:
-            return JsonResponse({"error":True,"message":"Please enter Valid Token Key"},status=404)
+            return JsonResponse({"error":True,"message":"Please enter Valid Token Key"},status=200)
     return JsonResponse({"error":True,"message":"Get Method Not Allowed!"},status=500)
 
 
