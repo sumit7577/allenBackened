@@ -1,4 +1,3 @@
-from urllib.robotparser import RequestRate
 from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
@@ -38,7 +37,7 @@ def Login(request):
     if request.method == "POST":
         token = request.headers.get("authorization")
         query  = User.objects.all().filter(auth_token=token)
-        if query is not None:
+        if len(query) >0:
             getUser = userCheck(token)
             user = {"name":query[0].username,"email":query[0].email,"type":getUser[0]}
             return JsonResponse({"error":False,"message":user},status=200)

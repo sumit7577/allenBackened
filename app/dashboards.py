@@ -32,7 +32,7 @@ def dashboard(request):
                 return JsonResponse({"error":True,"messag":"Not Allowed"})
         except Exception as e:
             print(e)
-            return JsonResponse({"error":True,"messag":"Please! Provide Auth Token"},status=500)
+            return JsonResponse({"error":True,"messag":"Please! Provide Auth Token"},status=200)
     return JsonResponse({"error":True,"message":"Get Method Not Allowed!"},status=500)
 
 
