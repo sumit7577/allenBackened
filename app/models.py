@@ -1,3 +1,5 @@
+from calendar import month
+from multiprocessing.managers import ValueProxy
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -45,6 +47,19 @@ class Rent(models.Model):
     
     def __str__(self) -> str:
         return self.Apartment_Name.name
+
+
+    def save(self,*args,**kwargs):
+        currentDate = timezone.now()
+        propertyData = Property.objects.filter(Room_Renter__id=self.Room_Renter_Name_id,id=self.Apartment_Name_id)
+        if len(propertyData) > 0:
+            if self.Payment_Date.month == currentDate.month:
+                super(Rent,self).delete()
+                super(Rent,self).save(*args,**kwargs)
+            else:
+                super(Rent,self).save(*args,**kwargs)
+        else:
+            raise ValueError(f"The {self.Room_Renter_Name} user is not a Room Renter in {self.Apartment_Name} Property")
 
 
 class Expense(models.Model):
