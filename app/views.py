@@ -38,7 +38,7 @@ def Login(request):
         query  = User.objects.all().filter(auth_token=token)
         if len(query) >0:
             getUser = userCheck(token)
-            user = {"name":query[0].username,"email":query[0].email,"type":getUser[0]}
+            user = {"name":query[0].username,"email":query[0].email,"type":getUser[0],"image":str(getUser[2].Profile_Image)}
             return JsonResponse({"error":False,"message":user},status=200)
         else:
             return JsonResponse({"error":True,"message":"Please enter Valid Token Key"},status=200)
@@ -58,11 +58,11 @@ def userCheck(token):
     user = (None,None)
     tenatUser= Tenant.objects.filter(user__auth_token= token)
     if len(tenatUser)> 0:
-        user = ("Tenant",tenatUser[0])
+        user = ("Tenant",tenatUser[0],tenatUser[0])
     else:
         query = Landlord.objects.filter(user__auth_token= token)
         if len(query) >0:
-            user = ("Landlord",query[0].id)
+            user = ("Landlord",query[0].id,query[0])
     return user
 
 

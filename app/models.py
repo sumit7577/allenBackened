@@ -1,5 +1,3 @@
-from calendar import month
-from multiprocessing.managers import ValueProxy
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -14,6 +12,14 @@ class Tenant(models.Model):
     def __str__(self):
         return self.user.username
 
+    def save(self,*args,**kwargs):
+        userCheck = User.objects.filter(landlord=self.user.id)
+        if len(userCheck) > 0:
+            raise ValueError(f"The {self.user.username} is Already Assigned as Landlord")
+        else:
+            super(Tenant,self).save(*args,**kwargs)
+
+
 class Landlord(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     name = models.CharField(max_length=50,unique=False,db_index=True)
@@ -21,6 +27,15 @@ class Landlord(models.Model):
 
     def __str__(self) -> str:
         return self.user.username
+    
+    def save(self,*args,**kwargs):
+        userCheck = Tenant.objects.filter(user_id=self.user.id)
+        if len(userCheck) > 0:
+            raise ValueError(f"The {self.user.username} is Already Assigned as Tenants")
+        else:
+            super(Landlord,self).save(*args,**kwargs)
+
+
         
 class Property(models.Model):
     name = models.CharField(max_length=120,blank=False,unique=True)
@@ -32,6 +47,8 @@ class Property(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
 
 class Rent(models.Model):
     rentChoice = [
@@ -54,8 +71,11 @@ class Rent(models.Model):
         propertyData = Property.objects.filter(Room_Renter__id=self.Room_Renter_Name_id,id=self.Apartment_Name_id)
         if len(propertyData) > 0:
             if self.Payment_Date.month == currentDate.month:
-                super(Rent,self).delete()
-                super(Rent,self).save(*args,**kwargs)
+                try:
+                    super(Rent,self).delete()
+                    super(Rent,self).save(*args,**kwargs)
+                except:
+                    raise ValueError(f"The {self.Room_Renter_Name} Is Already Created Rent Object In This Month")
             else:
                 super(Rent,self).save(*args,**kwargs)
         else:

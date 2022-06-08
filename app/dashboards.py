@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from pytz import timezone
+from pytz import timezone 
 from .views import Verify,userCheck
 from .models import Expense, Rent,Property,Tenant,Landlord
 from .serializers import userSerializers
@@ -71,8 +71,14 @@ def LandlordFunc(token,id,month):
 
 
 def TenantFunc(token,id,month):
+    currentDate = datetime.now()
+    month = currentDate.month
+    year = currentDate.year
     response = {}
     propertyName = Property.objects.filter(Room_Renter=id)
+    autoCreateMonthly = Rent.objects.filter(Apartment_Name_id=propertyName[0].id,Payment_Date__month=month,Payment_Date__year=year)
+    #if len(autoCreateMonthly) ==0:
+        #Rent.objects.create(Room_Renter_Name=id,Apartment_Name=propertyName[0],Payment_Amount=0,Currency_Code="EUR")
     rentData = Rent.objects.filter(Apartment_Name_id=propertyName[0].id)
     expenseData = Expense.objects.filter(Apartment_Name_id=propertyName[0].id)
     totalExpensePaid  = expenseData.aggregate(Sum("Payment_Amount"))
